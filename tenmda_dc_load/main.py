@@ -88,5 +88,7 @@ if __name__ == "__main__":
     print(dc.get_voltage())
     dc.set_power(20)
     dc.turn_on()
-    while True:
+    for i in range(500):
+        dc.set_power(i/4)
         print(dc.get_current())
+        time.sleep(0.2)
