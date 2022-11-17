@@ -2,6 +2,9 @@
 
 A simple library to contol the Tenma 72-13210
 
+requires:
+- pyserial
+
 ```python
 from tenma_dc_load import DCload
 

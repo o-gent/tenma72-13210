@@ -6,5 +6,5 @@ setup(name='Tenma 72-13210',
       author='Oliver Gent',
       author_email='oliver gent : )',
       url='',
-      packages=['pyserial'],
+      packages=['tenma_dc_load'],
      )
