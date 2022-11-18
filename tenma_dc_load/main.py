@@ -1,4 +1,5 @@
 import time
+from typing import List
 import serial
 
 class DCload():
@@ -9,6 +10,30 @@ class DCload():
     def __init__(self, port):
         self.__connection = serial.Serial(port, 115200)
         self.__connection.timeout = 1 # so we don't hang forever if nothing is recieved
+        
+        self.__voltage = 0.0
+        self.__current = 0.0
+        self.__resistance = 0.0
+        self.__power = 0.0
+        self.__set_voltage = 0.0
+        self.__set_current = 0.0
+        self.__set_resistance = 0.0
+        self.__set_power = 0.0
+
+    def __call__(self):
+        return self.get_readings()
+    
+    def get_readings(self) -> List[float]:
+        self.__voltage = self.get_voltage()
+        self.__current = self.get_current()
+        self.__power = self.get_power()
+        #self.__resistance = self.get_resistance()
+        return [
+            self.__voltage,
+            self.__current,
+            self.__power,
+            self.__resistance
+        ]
 
     def write(self, command:str):
         """ write correct format to serial from string """
@@ -86,9 +111,22 @@ class DCload():
 if __name__ == "__main__":
     dc = DCload("COM8")
     print(dc.get_voltage())
-    dc.set_power(20)
+    dc.set_power(10)
     dc.turn_on()
-    for i in range(500):
-        dc.set_power(i/4)
-        print(dc.get_current())
-        time.sleep(0.2)
+    import csv
+
+    with open(f"data_{time.strftime('%Y%m%d-%H%M%S')}.csv", "w") as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=',')
+        csvwriter.writerow(['voltage', 'current', 'power', 'resistance'])
+        i = 0
+        while True:
+            results = dc()
+            print(results)
+            csvwriter.writerow(results)
+            i += 1
+            if i > 300:
+                i = 0
+                dc.set_power(10)
+            if i == 150:
+                dc.set_power(5)
+
